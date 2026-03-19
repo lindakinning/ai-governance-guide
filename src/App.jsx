@@ -638,11 +638,11 @@ function TrackerTab({openLaw, setOpenLaw}) {
     "🔴":{bg:"rgba(224,120,104,0.15)",color:"#E07868"},
   };
   const newsStyle = {
-    deregulatory:{bg:"rgba(224,120,104,0.15)",color:"#E07868"},
-    softening:{bg:"rgba(232,195,122,0.15)",color:"#E8C37A"},
-    active:{bg:"rgba(126,200,168,0.15)",color:"#7EC8A8"},
-    novel:{bg:"rgba(196,160,240,0.15)",color:"#C4A0F0"},
-    soft:{bg:"rgba(232,195,122,0.15)",color:"#E8C37A"},
+    deregulatory:{bg:"rgba(224,120,104,0.15)",color:"#E07868", label:"Dereg."},
+    softening:{bg:"rgba(232,195,122,0.15)",color:"#E8C37A", label:"Softening"},
+    active:{bg:"rgba(126,200,168,0.15)",color:"#7EC8A8", label:"Active"},
+    novel:{bg:"rgba(196,160,240,0.15)",color:"#C4A0F0", label:"Novel"},
+    soft:{bg:"rgba(232,195,122,0.15)",color:"#E8C37A", label:"Soft"},
   };
 
   const filteredLandscape = trackerFilter === "civic"
@@ -725,7 +725,7 @@ function TrackerTab({openLaw, setOpenLaw}) {
                 <div className="nbody">{item.summary}</div>
                 <span className="ltag ntype" style={isCivic ? {color:"#7EC8A8",borderColor:"rgba(126,200,168,0.3)"} : {}}>{item.type}</span>
               </div>
-              <div><div className="nsig" style={{background:s.bg,color:s.color}}>{item.signal}</div></div>
+              <div><div className="nsig" style={{background:s.bg,color:s.color}}>{s.label || item.signal}</div></div>
             </div>
           );
         })}

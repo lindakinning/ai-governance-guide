@@ -171,13 +171,15 @@ const CSS = `
   .h-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--text-hi); }
   .h-title em { font-style: italic; color: var(--accent); }
   .h-sub { font-size: 13px; color: var(--text-muted); margin-top: 3px; font-family: 'DM Mono', monospace; line-height: 1.5; }
-  .nav { display: flex; }
+  .nav { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
   .nav-btn {
     background: none; border: none; cursor: pointer;
     font-family: 'DM Mono', monospace; font-size: 11px;
     letter-spacing: 0.1em; text-transform: uppercase;
     color: var(--text-muted); padding: 10px 18px 14px;
     border-bottom: 2px solid transparent; transition: all 0.2s;
+    white-space: nowrap; flex-shrink: 0;
   }
   .nav-btn:hover { color: var(--accent); }
   .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
@@ -297,6 +299,7 @@ const CSS = `
     font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.07em;
     padding: 4px 10px; border-radius: 3px; text-align: center;
     text-transform: uppercase; font-weight: 600;
+    white-space: nowrap;
   }
   .ldetail { padding: 16px 18px 20px; border-top: 1px solid var(--border); background: var(--bg-deep); }
   .ldetail-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text-hi); }
@@ -389,11 +392,27 @@ const CSS = `
     .agrid { grid-template-columns: repeat(3, 1fr); }
     .lcard-header { grid-template-columns: 1fr; gap: 8px; }
     .lrow { grid-template-columns: 1fr; }
-    .nitem { grid-template-columns: 70px 1fr; }
     .pov-arow { grid-template-columns: 1fr; gap: 3px; }
     .civic-stat-grid { grid-template-columns: repeat(2,1fr) !important; }
     .norm-grid { grid-template-columns: 1fr !important; }
     .stick-grid { grid-template-columns: 1fr !important; }
+
+    /* tracker: stack signal badge below summary on mobile */
+    .lcard-header { display: flex; flex-direction: column; align-items: flex-start; }
+    .sbadge { font-size: 10px; letter-spacing: 0.04em; padding: 3px 8px; }
+
+    /* news: hide signal badge column, show inline */
+    .nitem { grid-template-columns: 60px 1fr; }
+    .nitem > div:last-child { display: none; }
+    .nsig { display: none; }
+
+    /* civic banner padding */
+    .civic-banner { padding: 22px 20px; }
+    .civic-headline { font-size: 22px; }
+
+    /* POV options */
+    .pov-opts { gap: 6px; }
+    .popt { padding: 12px 13px; }
   }
 
   /* ── Civic Layer ── */

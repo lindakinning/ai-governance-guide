@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');`;
 
@@ -33,17 +33,17 @@ const LEGAL_INVENTIONS = [
 
 const CURRENT_LANDSCAPE = [
   { id: "eu_ai_act", name: "EU AI Act", jurisdiction: "European Union", status: "Active (phased)", type: "Comprehensive legislation", layer: ["model", "deployment"], approach: "ex_ante", date: "In force Aug 2024; GPAI rules Aug 2025", summary: "World's first comprehensive AI legal framework. Risk-tiered approach: prohibited uses banned Feb 2025, GPAI model rules active Aug 2025, high-risk system rules by 2027. EU Commission's Digital Omnibus (Nov 2025) now proposes easing some timelines — the regulation is being renegotiated before it is fully in force.", signal: "🟡", signalLabel: "Softening", url: "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" },
-  { id: "trump_eo", name: "US Executive Order (Dec 2025)", jurisdiction: "United States", status: "Active", type: "Executive order", layer: ["model", "deployment"], approach: "ex_post", date: "December 11, 2025", summary: "Directs DOJ to identify and challenge 'onerous' state AI laws. Seeks to centralize AI policy at federal level and preempt state regulation through litigation and agency action. Follows Jan 2025 EO revoking Biden's safety-focused order. US posture: remove friction, assert competitiveness.", signal: "🔴", signalLabel: "Deregulatory", url: "https://www.whitehouse.gov/presidential-actions/2025/12/eliminating-state-law-obstruction-of-national-artificial-intelligence-policy/" },
-  { id: "state_patchwork", name: "US State Patchwork", jurisdiction: "United States (states)", status: "Active / contested", type: "State legislation", layer: ["deployment", "model"], approach: "ex_ante", date: "Ongoing — 1,000+ bills introduced 2024–25", summary: "California, Colorado, New York, Illinois, and Texas leading on algorithmic accountability, bias mitigation, and transparency. Senate voted 99-1 on July 1, 2025 to strip the federal AI moratorium from the One Big Beautiful Bill, preserving state authority for now. Federal EO Dec 2025 now using litigation strategy to challenge these laws.", signal: "🟠", signalLabel: "Under pressure", url: "https://www.goodwinlaw.com/en/insights/publications/2025/07/alerts-practices-aiml-federal-ai-moratorium-dies-on-the-vine" },
+  { id: "trump_eo", name: "US Executive Order (Dec 2025)", jurisdiction: "United States", status: "Active", type: "Executive order", layer: ["model", "deployment"], approach: "ex_post", date: "December 11, 2025", summary: "Directs DOJ to identify and challenge 'onerous' state AI laws. Seeks to centralize AI policy at federal level and preempt state regulation through litigation and agency action. Follows Jan 2025 EO revoking Biden's safety-focused order. US posture: remove friction, assert competitiveness.", signal: "🔴", signalLabel: "Dereg.", url: "https://www.whitehouse.gov/presidential-actions/2025/12/eliminating-state-law-obstruction-of-national-artificial-intelligence-policy/" },
+  { id: "state_patchwork", name: "US State Patchwork", jurisdiction: "United States (states)", status: "Active / contested", type: "State legislation", layer: ["deployment", "model"], approach: "ex_ante", date: "Ongoing — 1,000+ bills introduced 2024–25", summary: "California, Colorado, New York, Illinois, and Texas leading on algorithmic accountability, bias mitigation, and transparency. Senate voted 99-1 on July 1, 2025 to strip the federal AI moratorium from the One Big Beautiful Bill, preserving state authority for now. Federal EO Dec 2025 now using litigation strategy to challenge these laws.", signal: "🟠", signalLabel: "Contested", url: "https://www.goodwinlaw.com/en/insights/publications/2025/07/alerts-practices-aiml-federal-ai-moratorium-dies-on-the-vine" },
   { id: "council_europe", name: "Council of Europe AI Treaty", jurisdiction: "International", status: "Open for signature", type: "Binding international treaty", layer: ["model", "deployment"], approach: "ex_ante", date: "Opened for signature Sep 2024", summary: "World's first legally binding international AI treaty. Uniquely applies to both public and private actors — not just governments. Sets obligations around human rights, democracy, and rule of law across the full AI lifecycle. A structural innovation: international law that binds private companies directly.", signal: "🟢", signalLabel: "Novel", url: "https://www.anecdotes.ai/learn/ai-regulations-in-2025-us-eu-uk-japan-china-and-more" },
   { id: "ftc_comply", name: "FTC Operation AI Comply", jurisdiction: "United States", status: "Active", type: "Enforcement action", layer: ["deployment"], approach: "ex_post", date: "2024–ongoing", summary: "FTC using existing consumer protection authority to address deceptive AI practices — false capability claims, manipulative design, unlawful data collection. Ex post enforcement via existing law, no new AI-specific statute needed. Classic US approach: let harms emerge, then litigate.", signal: "🟡", signalLabel: "Incremental", url: "https://www.morganlewis.com/pubs/2025/12/the-new-rules-of-ai-a-global-legal-overview" },
   { id: "south_korea", name: "South Korea AI Framework Act", jurisdiction: "South Korea", status: "Enacted", type: "National legislation", layer: ["model", "deployment"], approach: "ex_ante", date: "Finalized January 2025", summary: "Strengthens transparency and safety requirements with government-backed R&D promotion. Part of South Korea's bid to be a global AI hub with governance guardrails — attempting to thread the needle between EU precaution and US permissiveness.", signal: "🟢", signalLabel: "Active", url: "https://iapp.org/news/a/global-ai-law-and-policy-tracker-highlights-and-takeaways" },
-  { id: "japan", name: "Japan AI Promotion Act", jurisdiction: "Japan", status: "Enacted", type: "National legislation", layer: ["deployment"], approach: "ex_ante", date: "May 2025", summary: "Deliberately light-touch: encourages companies to cooperate with government safety measures. Primary enforcement mechanism is public disclosure of non-compliant companies — a shame-based compliance model. No hard mandates, no fines.", signal: "🟡", signalLabel: "Soft touch", url: "https://iapp.org/news/a/global-ai-law-and-policy-tracker-highlights-and-takeaways" },
+  { id: "japan", name: "Japan AI Promotion Act", jurisdiction: "Japan", status: "Enacted", type: "National legislation", layer: ["deployment"], approach: "ex_ante", date: "May 2025", summary: "Deliberately light-touch: encourages companies to cooperate with government safety measures. Primary enforcement mechanism is public disclosure of non-compliant companies — a shame-based compliance model. No hard mandates, no fines.", signal: "🟡", signalLabel: "Soft", url: "https://iapp.org/news/a/global-ai-law-and-policy-tracker-highlights-and-takeaways" },
   { id: "china", name: "China AI Labeling Rules", jurisdiction: "China", status: "In effect Sep 2025", type: "Regulatory rules", layer: ["deployment", "runtime"], approach: "ex_ante", date: "September 2025", summary: "Requires explicit and implicit labeling of AI-generated content across text, audio, images, video, and virtual scenes. Detailed, specific, and enforceable — without a comprehensive AI law. China's approach: targeted sector rules rather than a single framework, moving faster than comprehensive legislation would allow.", signal: "🟡", signalLabel: "Targeted", url: "https://iapp.org/news/a/global-ai-law-and-policy-tracker-highlights-and-takeaways" },
-  { id: "voluntary", name: "Frontier Lab Voluntary Commitments", jurisdiction: "Global (private)", status: "Ongoing", type: "Private governance", layer: ["model"], approach: "ex_ante", date: "2023–ongoing", summary: "White House voluntary commitments from OpenAI, Anthropic, Google, Meta et al. on safety evals, red teaming, and watermarking. Anthropic's Public Benefit Corporation structure and OpenAI's capped-profit model are private experiments in new legal forms. Significant structural gap: no enforcement mechanism.", signal: "🔴", signalLabel: "Unenforceable", url: "" },
-  { id: "paiassociation", name: "Partnership on AI", jurisdiction: "Global (civil society)", status: "Active", type: "Civil society", layer: ["model", "deployment"], approach: "ex_ante", date: "Founded 2016", summary: "Multi-stakeholder body including NGOs, academics, and companies developing shared norms, research, and guidance for responsible AI. Focus areas include synthetic media, worker displacement, and safety. Norm-setting without enforcement authority — its value is legitimacy and convening power.", signal: "🟡", signalLabel: "Norm-setting", url: "https://partnershiponai.org", civic: true },
+  { id: "voluntary", name: "Frontier Lab Voluntary Commitments", jurisdiction: "Global (private)", status: "Ongoing", type: "Private governance", layer: ["model"], approach: "ex_ante", date: "2023–ongoing", summary: "White House voluntary commitments from OpenAI, Anthropic, Google, Meta et al. on safety evals, red teaming, and watermarking. Anthropic's Public Benefit Corporation structure and OpenAI's capped-profit model are private experiments in new legal forms. Significant structural gap: no enforcement mechanism.", signal: "🔴", signalLabel: "No teeth", url: "" },
+  { id: "paiassociation", name: "Partnership on AI", jurisdiction: "Global (civil society)", status: "Active", type: "Civil society", layer: ["model", "deployment"], approach: "ex_ante", date: "Founded 2016", summary: "Multi-stakeholder body including NGOs, academics, and companies developing shared norms, research, and guidance for responsible AI. Focus areas include synthetic media, worker displacement, and safety. Norm-setting without enforcement authority — its value is legitimacy and convening power.", signal: "🟡", signalLabel: "Norms", url: "https://partnershiponai.org", civic: true },
   { id: "aisafety", name: "AI Safety Institute Network", jurisdiction: "International (govt-adjacent)", status: "Active", type: "Intergovernmental", layer: ["model"], approach: "ex_ante", date: "Launched 2023–24", summary: "UK, US, EU, and 25+ national AI safety institutes collaborating on frontier model evaluations and shared safety standards. Blurs the line between government and civil society — technical experts, not legislators, doing the governance work. Closest existing thing to an international AI measurement body.", signal: "🟢", signalLabel: "Emerging", url: "https://www.gov.uk/government/organisations/ai-safety-institute", civic: true },
-  { id: "aiedu", name: "AI Literacy & Civic Education Initiatives", jurisdiction: "Global (civil society)", status: "Fragmented", type: "Civil society", layer: ["deployment", "runtime"], approach: "ex_ante", date: "2023–ongoing", summary: "Growing ecosystem of NGOs, libraries, schools, and community organizations building AI literacy programs — teaching citizens what AI is, how to detect synthetic content, and how to participate in governance. Day One Project, AI4K12, UNESCO's AI competency framework. Chronically underfunded relative to the scale of deployment.", signal: "🟠", signalLabel: "Underpowered", url: "https://ai4k12.org", civic: true },
+  { id: "aiedu", name: "AI Literacy & Civic Education Initiatives", jurisdiction: "Global (civil society)", status: "Fragmented", type: "Civil society", layer: ["deployment", "runtime"], approach: "ex_ante", date: "2023–ongoing", summary: "Growing ecosystem of NGOs, libraries, schools, and community organizations building AI literacy programs — teaching citizens what AI is, how to detect synthetic content, and how to participate in governance. Day One Project, AI4K12, UNESCO's AI competency framework. Chronically underfunded relative to the scale of deployment.", signal: "🟠", signalLabel: "Weak", url: "https://ai4k12.org", civic: true },
   { id: "contentauth", name: "Content Authenticity Initiative / C2PA", jurisdiction: "Global (industry-led)", status: "Active", type: "Technical standard", layer: ["runtime", "deployment"], approach: "ex_ante", date: "Launched 2019; C2PA spec 2021", summary: "Coalition of Adobe, BBC, Intel, Microsoft, and others developing open technical standards for content provenance — cryptographic watermarking that attaches verifiable origin data to images, video, and audio. The infrastructure layer that civic disclosure norms depend on. Voluntary adoption; not yet universal.", signal: "🟡", signalLabel: "Scaling", url: "https://contentauthenticity.org", civic: true },
   { id: "aisafetynorms", name: "AI Incident Database", jurisdiction: "Global (civil society)", status: "Active", type: "Civil society", layer: ["deployment", "runtime"], approach: "ex_post", date: "Launched 2020", summary: "Publicly accessible database of AI system failures and harms, maintained by the Responsible AI Collaborative. Directly addresses the 'legibility of harm' problem — making AI incidents visible, searchable, and attributable so norms and law can respond to documented reality rather than hypotheticals.", signal: "🟢", signalLabel: "Active", url: "https://incidentdatabase.ai", civic: true },
 ];
@@ -614,6 +614,22 @@ function ToolkitTab({openInv, setOpenInv, filter, setFilter}) {
 
 function TrackerTab({openLaw, setOpenLaw}) {
   const [trackerFilter, setTrackerFilter] = useState("all");
+  const [liveNews, setLiveNews] = useState(NEWS_ITEMS);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("https://gist.githubusercontent.com/lindakinning/0d406396ff78bef26fe529109e527422/raw/ai-governance-data.json")
+      .then(r => r.json())
+      .then(data => {
+        if (data.news && data.news.length) setLiveNews(data.news);
+        setLastUpdated(new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }));
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const sigStyle = {
     "🟢":{bg:"rgba(126,200,168,0.15)",color:"#7EC8A8"},
@@ -636,10 +652,10 @@ function TrackerTab({openLaw, setOpenLaw}) {
     : CURRENT_LANDSCAPE;
 
   const filteredNews = trackerFilter === "civic"
-    ? NEWS_ITEMS.filter(n => n.type === "Civic")
+    ? liveNews.filter(n => n.type === "Civic")
     : trackerFilter === "legal"
-    ? NEWS_ITEMS.filter(n => n.type !== "Civic")
-    : NEWS_ITEMS;
+    ? liveNews.filter(n => n.type !== "Civic")
+    : liveNews;
 
   return (
     <div>
@@ -692,7 +708,11 @@ function TrackerTab({openLaw, setOpenLaw}) {
 
       <div className="divider"/>
       <div className="sec-title" style={{fontSize:"22px",marginBottom:"4px"}}>Recent Developments</div>
-      <div className="sec-desc" style={{marginBottom:"16px"}}>The regulatory and civic signal worth tracking, most recent first.</div>
+      <div className="sec-desc" style={{marginBottom:"16px"}}>
+        The regulatory and civic signal worth tracking, most recent first.
+        {loading && <span style={{color:"var(--text-muted)",marginLeft:"8px",fontFamily:"'DM Mono',monospace",fontSize:"11px"}}> Loading latest...</span>}
+        {lastUpdated && <span style={{color:"var(--text-muted)",marginLeft:"8px",fontFamily:"'DM Mono',monospace",fontSize:"11px"}}> Updated {lastUpdated}</span>}
+      </div>
       <div className="nlist">
         {filteredNews.map((item,i)=>{
           const s = newsStyle[item.signal]||{bg:"rgba(184,168,136,0.15)",color:"#B8A888"};
